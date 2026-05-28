@@ -6,7 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .models import Ticket
 from .serializers import TicketSerializer, TicketStatusSerializer
-from core.permissions import IsAdminOrAttendant, IsOwnerCustomer, IsAdminUser
+from core.permissions import IsAdminOrAttendant, IsAdminUser
 
 
 class TicketViewSet(viewsets.ModelViewSet):

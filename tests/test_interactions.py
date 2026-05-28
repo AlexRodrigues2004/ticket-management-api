@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 from rest_framework import status
-from tests.factories import UserFactory, AttendantFactory, TicketFactory
+from tests.factories import UserFactory, TicketFactory
 
 
 def auth_client(user):

@@ -2,7 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 from rest_framework import status
 from tests.factories import (
-    UserFactory, AttendantFactory, AdminFactory,
+    UserFactory, AttendantFactory,
     CustomerFactory, CategoryFactory, TicketFactory
 )
 

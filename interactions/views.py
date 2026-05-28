@@ -1,6 +1,5 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from .models import Interaction
 from .serializers import InteractionSerializer, InteractionCreateSerializer
 from tickets.models import Ticket
