@@ -1,10 +1,7 @@
 name: CD - Build e Publicação da Imagem Docker
 
 on:
-  workflow_run:
-    workflows: ["CI - Ticket Management API"]
-    types:
-      - completed
+  push:
     branches:
       - main
 
@@ -12,7 +9,6 @@ jobs:
   build-and-push:
     name: Build e Push da Imagem
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       packages: write
