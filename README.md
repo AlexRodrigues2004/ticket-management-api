@@ -83,3 +83,29 @@ Situação atual: Partes 1-6 concluídas e mergeadas na main.
 Próximo passo: Parte 7 — CI com GitHub Actions (.github/workflows/ci.yml).
 O projeto roda com `docker compose up --build`. Testes: `docker compose exec web pytest tests/ -v`.
 22 testes passando. Imagem base: python:3.11-bullseye (compatibilidade Xeon E5 v3).
+
+## Como funciona o CI
+
+A pipeline de CI está configurada em `.github/workflows/ci.yml` e executa automaticamente a cada push ou pull request nas branches `main` e `feature/**`.
+
+Etapas executadas:
+1. Checkout do código
+2. Configuração do Python 3.11
+3. Instalação das dependências
+4. Verificação do projeto Django (`manage.py check`)
+5. Execução das migrations
+6. Execução dos testes automatizados (`pytest`)
+7. Verificação de qualidade do código (`flake8`)
+
+## Como funciona o CD
+
+A pipeline de CD está configurada em `.github/workflows/cd.yml` e executa automaticamente após a pipeline de CI ser concluída com sucesso na branch `main`.
+
+Estratégia adotada: **Build e publicação de imagem Docker no GitHub Container Registry (ghcr.io)**.
+
+Etapas executadas:
+1. Login no GitHub Container Registry
+2. Build da imagem Docker
+3. Push da imagem com as tags `latest` e `sha-<commit>`
+
+A imagem publicada fica disponível em:
