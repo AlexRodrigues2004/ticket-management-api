@@ -61,7 +61,7 @@ jobs:
         run: python manage.py migrate
 
       - name: Rodar testes com cobertura
-        run: pytest tests/ -v --cov=. --cov-report=term-missing --cov-report=xml --cov-omit=*/migrations/*,manage.py,*/settings.py,*/wsgi.py,*/asgi.py,*/factories.py
+        run: pytest tests/ -v --cov=. --cov-report=term-missing --cov-report=xml
 
       - name: Exibir resumo de cobertura
         run: coverage report --fail-under=70
