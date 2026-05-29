@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Management — Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-box">
+            <h1>Ticket Management</h1>
+            <p>Faça login para acessar o sistema</p>
+
+            <div id="alert" class="alert alert-error" style="display:none"></div>
+
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" id="username" placeholder="Digite seu usuário" />
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="password" placeholder="Digite sua senha" />
+            </div>
+            <button class="btn btn-primary" onclick="handleLogin()">Entrar</button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        if (isAuthenticated()) window.location.href = 'dashboard.html';
+
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        async function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const alert = document.getElementById('alert');
+
+            if (!username || !password) {
+                alert.textContent = 'Preencha todos os campos.';
+                alert.style.display = 'block';
+                return;
+            }
+
+            const result = await login(username, password);
+            if (result.success) {
+                window.location.href = 'dashboard.html';
+            } else {
+                alert.textContent = 'Usuário ou senha incorretos.';
+                alert.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

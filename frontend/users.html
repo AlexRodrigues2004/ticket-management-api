@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários — Ticket Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <a class="logo" href="dashboard.html">🎫 Ticket Management</a>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="tickets.html">Chamados</a></li>
+            <li><a href="customers.html">Clientes</a></li>
+            <li><a href="categories.html">Categorias</a></li>
+            <li><a href="users.html" class="active">Usuários</a></li>
+        </ul>
+        <div class="user-info">
+            <span id="user-name"></span>
+            <button onclick="logout()">Sair</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="toolbar">
+            <h1>Usuários</h1>
+        </div>
+
+        <div class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Usuário</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table">
+                    <tr><td colspan="6" class="empty-state"><p>Carregando...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        requireAuth();
+        if (!isAdmin()) window.location.href = 'dashboard.html';
+
+        const user = getUser();
+        document.getElementById('user-name').textContent = `${user.first_name || user.username} (${user.role})`;
+
+        function badgeRole(role) {
+            const map = {
+                admin: 'badge-critica',
+                atendente: 'badge-em_atendimento',
+                cliente: 'badge-aberto'
+            };
+            return `<span class="badge ${map[role] || ''}">${role}</span>`;
+        }
+
+        async function loadUsers() {
+            const res = await api.get('/users/');
+            const tbody = document.getElementById('users-table');
+
+            if (res.status !== 200 || res.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><p>Nenhum usuário encontrado.</p></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = res.data.map(u => `
+                <tr>
+                    <td>#${u.id}</td>
+                    <td>${u.username}</td>
+                    <td>${u.first_name} ${u.last_name}</td>
+                    <td>${u.email}</td>
+                    <td>${badgeRole(u.role)}</td>
+                    <td><span class="badge ${u.is_active ? 'badge-resolvido' : 'badge-cancelado'}">${u.is_active ? 'Ativo' : 'Inativo'}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        loadUsers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chamados — Ticket Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <a class="logo" href="dashboard.html">Ticket Management</a>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="tickets.html" class="active">Chamados</a></li>
+            <li><a href="customers.html">Clientes</a></li>
+            <li><a href="categories.html">Categorias</a></li>
+            <li id="nav-users" style="display:none"><a href="users.html">Usuarios</a></li>
+        </ul>
+        <div class="user-info">
+            <span id="user-name"></span>
+            <button onclick="logout()">Sair</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="toolbar">
+            <h1>Chamados</h1>
+            <button class="btn btn-primary" onclick="openModal()">Novo Chamado</button>
+        </div>
+
+        <div class="card">
+            <div class="filters">
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="filter-status" onchange="loadTickets()">
+                        <option value="">Todos</option>
+                        <option value="aberto">Aberto</option>
+                        <option value="em_atendimento">Em Atendimento</option>
+                        <option value="aguardando_cliente">Aguardando Cliente</option>
+                        <option value="resolvido">Resolvido</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Prioridade</label>
+                    <select id="filter-priority" onchange="loadTickets()">
+                        <option value="">Todas</option>
+                        <option value="baixa">Baixa</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                        <option value="critica">Critica</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Buscar</label>
+                    <input type="text" id="filter-search" placeholder="Titulo ou descricao..." oninput="loadTickets()" />
+                </div>
+                <button class="btn btn-secondary" onclick="clearFilters()">Limpar</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Titulo</th>
+                        <th>Cliente</th>
+                        <th>Categoria</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Aberto em</th>
+                        <th>Acoes</th>
+                    </tr>
+                </thead>
+                <tbody id="tickets-table">
+                    <tr><td colspan="8" class="empty-state"><p>Carregando...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-ticket">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">x</button>
+            <h3>Novo Chamado</h3>
+            <div id="modal-alert" class="alert alert-error" style="display:none"></div>
+            <div class="form-group">
+                <label>Titulo</label>
+                <input type="text" id="ticket-title" placeholder="Titulo do chamado" />
+            </div>
+            <div class="form-group">
+                <label>Descricao</label>
+                <textarea id="ticket-description" rows="3" placeholder="Descreva o problema..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <select id="ticket-customer"></select>
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="ticket-category"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Prioridade</label>
+                <select id="ticket-priority">
+                    <option value="baixa">Baixa</option>
+                    <option value="media" selected>Media</option>
+                    <option value="alta">Alta</option>
+                    <option value="critica">Critica</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="createTicket()">Criar Chamado</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-status">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeStatusModal()">x</button>
+            <h3>Atualizar Chamado</h3>
+            <input type="hidden" id="status-ticket-id" />
+            <div class="form-group">
+                <label>Status</label>
+                <select id="status-value">
+                    <option value="aberto">Aberto</option>
+                    <option value="em_atendimento">Em Atendimento</option>
+                    <option value="aguardando_cliente">Aguardando Cliente</option>
+                    <option value="resolvido">Resolvido</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Prioridade</label>
+                <select id="priority-value">
+                    <option value="baixa">Baixa</option>
+                    <option value="media">Media</option>
+                    <option value="alta">Alta</option>
+                    <option value="critica">Critica</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="updateStatus()">Salvar</button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tickets.js"></script>
+</body>
+</html>

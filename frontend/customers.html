@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes — Ticket Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <a class="logo" href="dashboard.html">Ticket Management</a>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="tickets.html">Chamados</a></li>
+            <li><a href="customers.html" class="active">Clientes</a></li>
+            <li><a href="categories.html">Categorias</a></li>
+            <li id="nav-users" style="display:none"><a href="users.html">Usuarios</a></li>
+        </ul>
+        <div class="user-info">
+            <span id="user-name"></span>
+            <button onclick="logout()">Sair</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="toolbar">
+            <h1>Clientes</h1>
+            <button class="btn btn-primary" id="btn-novo" onclick="openModal()">Novo Cliente</button>
+        </div>
+
+        <div class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Cadastrado em</th>
+                        <th>Acoes</th>
+                    </tr>
+                </thead>
+                <tbody id="customers-table">
+                    <tr><td colspan="7" class="empty-state"><p>Carregando...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-customer">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">x</button>
+            <h3 id="modal-title">Novo Cliente</h3>
+            <div id="modal-alert" class="alert alert-error" style="display:none"></div>
+            <input type="hidden" id="customer-id" />
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="customer-name" placeholder="Nome completo" />
+            </div>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="customer-email" placeholder="email@exemplo.com" />
+            </div>
+            <div class="form-group">
+                <label>Telefone</label>
+                <input type="text" id="customer-phone" placeholder="(11) 99999-9999" />
+            </div>
+            <div class="form-group" id="active-group" style="display:none">
+                <label>Status</label>
+                <select id="customer-active">
+                    <option value="true">Ativo</option>
+                    <option value="false">Inativo</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="saveCustomer()">Salvar</button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/customers.js"></script>
+</body>
+</html>

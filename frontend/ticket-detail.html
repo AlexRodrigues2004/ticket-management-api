@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhe do Chamado — Ticket Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <a class="logo" href="dashboard.html">🎫 Ticket Management</a>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="tickets.html" class="active">Chamados</a></li>
+            <li><a href="customers.html">Clientes</a></li>
+            <li><a href="categories.html">Categorias</a></li>
+            <li id="nav-users" style="display:none"><a href="users.html">Usuários</a></li>
+        </ul>
+        <div class="user-info">
+            <span id="user-name"></span>
+            <button onclick="logout()">Sair</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="toolbar">
+            <h1 id="ticket-title">Carregando...</h1>
+            <a href="tickets.html" class="btn btn-secondary">← Voltar</a>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+            <div class="card">
+                <h2>Informações do Chamado</h2>
+                <table>
+                    <tbody id="ticket-info">
+                        <tr><td colspan="2" class="empty-state"><p>Carregando...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" id="status-card" style="display:none">
+                <h2>Atualizar Status</h2>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="status-value">
+                        <option value="aberto">Aberto</option>
+                        <option value="em_atendimento">Em Atendimento</option>
+                        <option value="aguardando_cliente">Aguardando Cliente</option>
+                        <option value="resolvido">Resolvido</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Prioridade</label>
+                    <select id="priority-value">
+                        <option value="baixa">Baixa</option>
+                        <option value="media">Média</option>
+                        <option value="alta">Alta</option>
+                        <option value="critica">Crítica</option>
+                    </select>
+                </div>
+                <div id="status-alert" class="alert alert-success" style="display:none">Status atualizado!</div>
+                <button class="btn btn-primary" onclick="updateStatus()">Salvar Alterações</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Histórico de Interações</h2>
+            <div class="interaction-list" id="interactions-list">
+                <div class="empty-state"><p>Nenhuma interação ainda.</p></div>
+            </div>
+
+            <div style="margin-top:20px">
+                <div class="form-group">
+                    <label>Nova Interação</label>
+                    <textarea id="new-message" rows="3" placeholder="Digite sua mensagem..."></textarea>
+                </div>
+                <div id="interaction-alert" class="alert alert-error" style="display:none"></div>
+                <button class="btn btn-primary" onclick="addInteraction()">Enviar Mensagem</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        requireAuth();
+
+        const user = getUser();
+        document.getElementById('user-name').textContent = `${user.first_name || user.username} (${user.role})`;
+        if (isAdmin()) document.getElementById('nav-users').style.display = 'block';
+
+        const params = new URLSearchParams(window.location.search);
+        const ticketId = params.get('id');
+
+        if (!ticketId) window.location.href = 'tickets.html';
+
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('pt-BR', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        function badgeStatus(status) {
+            const labels = {
+                aberto: 'Aberto', em_atendimento: 'Em Atendimento',
+                aguardando_cliente: 'Aguardando', resolvido: 'Resolvido', cancelado: 'Cancelado'
+            };
+            return `<span class="badge badge-${status}">${labels[status] || status}</span>`;
+        }
+
+        function badgePriority(p) {
+            const labels = { baixa: 'Baixa', media: 'Média', alta: 'Alta', critica: 'Crítica' };
+            return `<span class="badge badge-${p}">${labels[p] || p}</span>`;
+        }
+
+        async function loadTicket() {
+            const res = await api.get(`/tickets/${ticketId}/`);
+            if (res.status !== 200) {
+                window.location.href = 'tickets.html';
+                return;
+            }
+
+            const t = res.data;
+            document.getElementById('ticket-title').textContent = `#${t.id} — ${t.title}`;
+
+            document.getElementById('ticket-info').innerHTML = `
+                <tr><td><strong>Cliente</strong></td><td>${t.customer_detail?.name || '—'}</td></tr>
+                <tr><td><strong>Categoria</strong></td><td>${t.category_detail?.name || '—'}</td></tr>
+                <tr><td><strong>Status</strong></td><td>${badgeStatus(t.status)}</td></tr>
+                <tr><td><strong>Prioridade</strong></td><td>${badgePriority(t.priority)}</td></tr>
+                <tr><td><strong>Responsável</strong></td><td>${t.assigned_to_detail?.username || '—'}</td></tr>
+                <tr><td><strong>Criado por</strong></td><td>${t.created_by_detail?.username || '—'}</td></tr>
+                <tr><td><strong>Aberto em</strong></td><td>${formatDate(t.opened_at)}</td></tr>
+                <tr><td><strong>Atualizado em</strong></td><td>${formatDate(t.updated_at)}</td></tr>
+                <tr><td><strong>Descrição</strong></td><td>${t.description}</td></tr>
+            `;
+
+            if (isAttendant()) {
+                document.getElementById('status-card').style.display = 'block';
+                document.getElementById('status-value').value = t.status;
+                document.getElementById('priority-value').value = t.priority;
+            }
+        }
+
+        async function loadInteractions() {
+            const res = await api.get(`/tickets/${ticketId}/interactions/`);
+            const list = document.getElementById('interactions-list');
+
+            if (res.status !== 200 || res.data.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>Nenhuma interação ainda.</p></div>';
+                return;
+            }
+
+            list.innerHTML = res.data.map(i => `
+                <div class="interaction-item">
+                    <div class="meta">${i.user?.username || '—'} — ${formatDate(i.created_at)}</div>
+                    <div class="message">${i.message}</div>
+                </div>
+            `).join('');
+
+            list.scrollTop = list.scrollHeight;
+        }
+
+        async function updateStatus() {
+            const status = document.getElementById('status-value').value;
+            const priority = document.getElementById('priority-value').value;
+            const alertEl = document.getElementById('status-alert');
+
+            const res = await api.patch(`/tickets/${ticketId}/status/`, { status, priority });
+            if (res.status === 200) {
+                alertEl.style.display = 'block';
+                setTimeout(() => alertEl.style.display = 'none', 3000);
+                loadTicket();
+            }
+        }
+
+        async function addInteraction() {
+            const message = document.getElementById('new-message').value.trim();
+            const alertEl = document.getElementById('interaction-alert');
+
+            if (!message) {
+                alertEl.textContent = 'Digite uma mensagem.';
+                alertEl.style.display = 'block';
+                return;
+            }
+
+            const res = await api.post(`/tickets/${ticketId}/interactions/`, { message });
+            if (res.status === 201) {
+                document.getElementById('new-message').value = '';
+                alertEl.style.display = 'none';
+                loadInteractions();
+            } else {
+                alertEl.textContent = JSON.stringify(res.data);
+                alertEl.style.display = 'block';
+            }
+        }
+
+        loadTicket();
+        loadInteractions();
+    </script>
+</body>
+</html>

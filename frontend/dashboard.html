@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Ticket Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <a class="logo" href="dashboard.html">Ticket Management</a>
+        <ul>
+            <li><a href="dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="tickets.html">Chamados</a></li>
+            <li><a href="customers.html">Clientes</a></li>
+            <li><a href="categories.html">Categorias</a></li>
+            <li id="nav-users" style="display:none"><a href="users.html">Usuarios</a></li>
+        </ul>
+        <div class="user-info">
+            <span id="user-name"></span>
+            <button onclick="logout()">Sair</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="toolbar">
+            <h1>Dashboard</h1>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number" id="total-tickets">-</div>
+                <div class="label">Total de Chamados</div>
+            </div>
+            <div class="stat-card" style="border-color:#1565c0">
+                <div class="number" id="abertos">-</div>
+                <div class="label">Abertos</div>
+            </div>
+            <div class="stat-card" style="border-color:#e65100">
+                <div class="number" id="em-atendimento">-</div>
+                <div class="label">Em Atendimento</div>
+            </div>
+            <div class="stat-card" style="border-color:#2e7d32">
+                <div class="number" id="resolvidos">-</div>
+                <div class="label">Resolvidos</div>
+            </div>
+            <div class="stat-card" style="border-color:#c62828">
+                <div class="number" id="criticos">-</div>
+                <div class="label">Criticos</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Ultimos Chamados</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Titulo</th>
+                        <th>Cliente</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Aberto em</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tickets-table">
+                    <tr><td colspan="7" class="empty-state"><p>Carregando...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
