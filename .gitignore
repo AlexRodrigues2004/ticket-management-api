@@ -8,3 +8,5 @@ db.sqlite3
 dist/
 .DS_Store
 postgres_data/
+htmlcov/
+.coverage

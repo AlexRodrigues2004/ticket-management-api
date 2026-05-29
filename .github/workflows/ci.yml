@@ -60,8 +60,11 @@ jobs:
       - name: Rodar migrations
         run: python manage.py migrate
 
-      - name: Rodar testes
-        run: pytest tests/ -v --tb=short
+      - name: Rodar testes com cobertura
+        run: pytest tests/ -v --cov=. --cov-report=term-missing --cov-report=xml --cov-omit=*/migrations/*,manage.py,*/settings.py,*/wsgi.py,*/asgi.py,*/factories.py
+
+      - name: Exibir resumo de cobertura
+        run: coverage report --fail-under=70
 
   lint:
     name: Verificar Qualidade do Código
